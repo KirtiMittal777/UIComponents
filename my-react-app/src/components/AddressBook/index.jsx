@@ -59,24 +59,26 @@ const apiData = {
 //3 Address
 
 
-function Address({id, name, streetAddress, city, country, pincode , onShipToAddressClick}) {
+function Address({id, name, streetAddress, city, country, pincode , onShipToAddressClick, selectedAddressId}) {
    
   return (
-     <section className="address-block">
+     <section className={selectedAddressId ===id ? "address-block selected" : "address-block"}>
           <p>{name}</p>
           <p>{streetAddress}</p>
           <p>{city} , {country} , {pincode}</p>
-          <button className="ship-to-address-btn btn" onClick={(id) => onShipToAddressClick(id)}>Ship to Address</button>
+          <button className="ship-to-address-btn btn" onClick={() => onShipToAddressClick(id)}>Ship to Address</button>
      </section>
   )
 }
 
 function AddressContainer() {
     const [addresses, setAddresses] = useState([]);
-    const [hasNextPage, setHasNextPage] = useState();
-    const [loading, setLoading] = useState();
-    const [error, setError] = useState();
-    const [page, setPage] = useState();
+    const [hasNextPage, setHasNextPage] = useState(false);
+    const [selectedAddressId, setSelectedAddressId] = useState(null);
+
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [page, setPage] = useState(1);
     
      
      useEffect(() => {       
@@ -111,26 +113,25 @@ function AddressContainer() {
      }
 
     const onShipToAddressClick = (id) => {
-          console.log(id);
-         alert(id);
-      
+         setSelectedAddressId(id);
     }
      
-    // if(loading) {
-    //    return <div>Loading...</div>
-    // }
+    if(loading) {
+       return <div>Loading...</div>
+    }
 
      return (
-       <section className="address-container">
-         <button className="previous-btn btn" onClick={onPreviousBtnClick} disabled={page < 1}> {"<<"} </button>
-          {
-             addresses.map(address => 
-                <Address key={address.id}  {...address} onShipToAddressClick={onShipToAddressClick}/>
-             )
-          }
-          {error && <p>{error}</p>}
-         <button className="next-btn btn" onClick={onNextBtnClick} disabled={!hasNextPage}> {">>"} </button>
-       </section>
+       <><section className="address-container">
+             <button className="previous-btn btn" onClick={onPreviousBtnClick} disabled={page < 1}> {"<<"} </button>
+             {addresses.map(address => <Address key={address.id} {...address} onShipToAddressClick={onShipToAddressClick} selectedAddressId={selectedAddressId} />
+             )}
+             {error && <p>{error}</p>}
+             <button className="next-btn btn" onClick={onNextBtnClick} disabled={!hasNextPage}> {">>"} </button>
+         </section>
+          <p aria-live="polite">
+                 {selectedAddressId ? `Selected Address Id: ${selectedAddressId}` : "No address selected"}
+         </p>
+        </>
      )
 }
 
