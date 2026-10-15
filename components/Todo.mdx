@@ -1,0 +1,71 @@
+import {useState, useEffect} from 'react';
+
+const data = [
+  "Rose", "Tulip", "Sunflower", "Lily", "Daisy", 
+  "Orchid", "Marigold", "Lavender", "Peony", "Dahlia", 
+  "Iris", "Hydrangea", "Jasmine", "Lotus", "Hibiscus", 
+  "Carnation", "Chrysanthemum", "Daffodil", "Poppy", "Violet"
+];
+
+function Todo({todo, setTodos, setQuery}) {
+
+  const setTodoAsQuery = (value) => {
+      setQuery(value);
+      setTodos([]);
+  }
+
+  const deleteTodo = (e, id) => {
+     e.stopPropagation();
+     setTodos(prev => prev.filter(x => x.id !==id));
+  }
+
+  return (
+    <li className="todo-list-item" onClick={() => setTodoAsQuery(todo.value)}>
+      {todo.value}
+      <button onClick={(e) => deleteTodo(e, todo.id)}>X</button>
+    </li>
+  )
+}
+
+function Todos({todos, setTodos, setQuery}) {
+  
+  return (
+    <ul className="todo-list">
+    {
+      todos.map((todo) => (
+        <Todo todo={todo} key={todo.id} setTodos={setTodos} setQuery={setQuery}/> 
+      ))
+    }
+    </ul>
+  )
+}
+
+export default function App() {
+ const [todos, setTodos] = useState([]);
+ const [query, setQuery] = useState("");
+
+ const setInput = (e) => {
+      const value = e.target?.value;
+      if(!value) {
+         setQuery("");
+         setTodos([]);
+         return;
+      }
+      setQuery(value);
+
+      const filteredData = data.filter(item => item.toLowerCase().includes(value.toLowerCase()));
+      const todoData = filteredData.map((item, index) => {
+        return {id: index, value:item} 
+      });
+      setTodos(todoData);
+ }
+
+ return (
+   <section className="todo-container">
+     <input type="input" value={query} onChange={setInput}/> 
+     <Todos todos={todos} setTodos={setTodos} setQuery={setQuery}/>
+   </section>
+ ) 
+    
+    
+}
